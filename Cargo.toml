@@ -6,4 +6,6 @@ edition = "2021"
 [dependencies]
 chrono = "0.4"
 native-dialog = "0.6"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.7"
 zip = "0.6"

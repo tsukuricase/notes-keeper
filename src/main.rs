@@ -5,6 +5,24 @@ use std::io::{self};
 use std::path::Path;
 use zip::write::FileOptions;
 use zip::ZipWriter;
+use serde::Deserialize;
+use std::fs;
+
+#[derive(Deserialize)]
+struct Config {
+    paths: Paths,
+}
+
+#[derive(Deserialize)]
+struct Paths {
+    notes_folder: String,
+    backup_folder: String,
+}
+
+fn load_config() -> Config {
+    let config_str = fs::read_to_string("config.toml").expect("Failed to read config.toml");
+    toml::from_str(&config_str).expect("Failed to parse config.toml")
+}
 
 fn send_notification(message: &str) -> io::Result<()> {
     let result = MessageDialog::new()
@@ -45,8 +63,9 @@ fn add_folder_to_zip(
 }
 
 fn main() -> io::Result<()> {
-    let notes_folder = Path::new("xxxxx");
-    let backup_folder = Path::new("xxxxx");
+    let config = load_config();
+    let notes_folder = Path::new(&config.paths.notes_folder);
+    let backup_folder = Path::new(&config.paths.backup_folder);
 
     if !backup_folder.exists() {
         fs::create_dir_all(&backup_folder)?;
